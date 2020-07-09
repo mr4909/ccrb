@@ -1,6 +1,8 @@
 
 # load necessary packages
-requiredPackages = c('dplyr') # data manipulation
+requiredPackages = c('dplyr',
+                     'readr',
+                     'stringr')
 # only downloads packages if needed
 for(p in requiredPackages){
   if(!require(p,character.only = TRUE)) install.packages(p)
@@ -8,11 +10,17 @@ for(p in requiredPackages){
 }
 
 # import data
-ccrb <- read.csv("Civilian_Complaint_Review_Board__CCRB__-_Allegations_Closed.csv")
+ccrb <- read_csv("Civilian_Complaint_Review_Board__CCRB__-_Allegations_Closed.csv",na = c("", "NA", "*", "**"))
 # ccrb <- read.csv("Civilian_Complaint_Review_Board__CCRB__-_Complaints_Received.csv")
 
 # remove missing values
 ccrb <- na.omit(ccrb)
+
+# summarise data
+lapply(ccrb, table)
+
+# remove white space in variable name
+names(ccrb)<-str_replace_all(names(ccrb), c(" " = "." , "," = "" ))
 
 # remove missing values and cases outside of NYC
 ccrb <- ccrb %>% filter(Borough.Of.Incident == "Bronx"|
